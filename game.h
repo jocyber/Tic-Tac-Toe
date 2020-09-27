@@ -10,6 +10,7 @@ class Piece {
   float height;
   Color color;
   int code;
+  Texture2D player;
   
 public:
   Piece(float width, float height)
@@ -27,7 +28,16 @@ public:
   float getHeight(){return height;}
   float getWidth(){return width;} 
   
-  void drawPiece(int i, int j) {DrawRectangle(j * (width + 3), (i * (width + 3)), width, width, color);}
+  void drawPiece(int i, int j) 
+  {
+    DrawRectangle(j * (width + 3), (i * (width + 3)), width, width, color);
+  }
+  
+  void drawPlayer(Texture2D player, int i, int j, Rectangle playerRec)
+  {
+    this->player = player;
+    DrawTextureRec(player, playerRec, Vector2{j * width, i * width}, BLACK);
+  }
 };
 
 void makeGrid(std::array<std::array<Piece*, 3>, 3> &board, float width)
@@ -41,12 +51,17 @@ void makeGrid(std::array<std::array<Piece*, 3>, 3> &board, float width)
 }
 
 
-void drawBackground(float blockSize, std::array<std::array<Piece*, 3>, 3> &board)
+void drawBackground(std::array<std::array<Piece*, 3>, 3> &board, Texture2D player1, Texture2D player2, Rectangle player1Rec, Rectangle player2Rec)
 {
     for(int i = 0; i < 3; i++) 
     {
         for(int j = 0; j < 3; j++)
         {
+          if(board[i][j]->getCode() == 0)
+            board[i][j]->drawPlayer(player1, i, j, player1Rec);
+          else if(board[i][j]->getCode() == 5)
+            board[i][j]->drawPlayer(player2, i, j, player2Rec);
+          else if(board[i][j]->getCode() == -1)
             board[i][j]->drawPiece(i, j);
         }
     }

@@ -7,9 +7,14 @@
 
 int main()
 {
+    Texture2D x = LoadTexture(".\Sprites\player1.png");
+    Texture2D o = LoadTexture(".\Sprites\o_icon.png");
+ 
     int turn = 1;
     const int WindowWidth = 597;
     const float blockSize {WindowWidth / 3};
+    Rectangle player1Rec = {0.0f, 0.0f, (float)x.width, (float)x.height};
+    Rectangle player2Rec = {0.0f, 0.0f, (float)o.width, (float)o.height};
     std::array<std::array<Piece*, 3>, 3> board;
     makeGrid(board, blockSize);
     
@@ -21,7 +26,7 @@ int main()
         BeginDrawing();
         ClearBackground(Color{BLACK});
         
-        drawBackground(blockSize, board);
+        drawBackground(board, x, o, player1Rec, player2Rec);
         
         if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             int col = GetMouseX();
@@ -31,7 +36,7 @@ int main()
             if(turn == 1) {
                 if(board[row - 1][col - 1]->getCode() == -1) {
                     
-                    board[row - 1][col - 1]->changeColor(BLUE);
+                    board[row - 1][col - 1]->drawPlayer(x, row, col, player1Rec);
                     board[row - 1][col - 1]->setCode(0);
                     
                     if(checkBoard(board) == 1) {
@@ -45,7 +50,7 @@ int main()
                 }
             }else if(turn == 2) {
                 if(board[row - 1][col - 1]->getCode() == -1) {
-                    board[row - 1][col - 1]->changeColor(RED);
+                    board[row - 1][col - 1]->drawPlayer(o, row, col, player2Rec);
                     board[row - 1][col - 1]->setCode(5);
                     if(checkBoard(board) == 2) {
                         SetWindowTitle("Player 2 Wins!");
@@ -63,6 +68,8 @@ int main()
         EndDrawing();
     }
     
+    UnloadTexture(x);
+    UnloadTexture(o);
     CloseWindow();
     return EXIT_SUCCESS;
 }
